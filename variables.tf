@@ -1,10 +1,10 @@
 variable "actions" {
     default = {}
 }
-variable "action_resources" {
+variable "segment_two_resources" {
     default = {}
 }
-variable "parent_resources" {
+variable "segment_one_resources" {
     default = {}
 }
 variable "use_api_gateway" {

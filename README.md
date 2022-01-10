@@ -1,17 +1,18 @@
 # Terraform AWS Microservice Module
 
-A module for terraform to attempt to make deploying a microservice easier.
+A module for terraform to attempt to make deploying a microservice to lambda easier.
 
-This mostly replicates the functionality of the serverless platform bar a few features that are still in the works.
+This mostly replicates the functionality of the serverless platform bar 1 main feature still in the works.
 
 TODO:
 
-- Simple module configuration solution for resource paths deeper than 2 segments
 - Custom domain functionality
+
+The benefits of using terraform over serverless is its much, much faster and far more customizable to your specific needs.
 
 ## Usage
 
-You can use the module similar to the example below. 
+You can use the module similar to the example below.
 
 > Please be aware all the information from the example below has
 been stripped of sensitive data and some variables in the example are expected to come from your terraform variables. 
@@ -83,14 +84,14 @@ module "terraform-aws-microservice" {
     use_api_gateway = true
 
     # Resources positioned at segment 1 of the url
-    parent_resources = {
+    segment_one_resources = {
         exampleCollection = {
             path_part = "example"
         }
     }
 
     # Resources positioned at segment 2 of the url
-    action_resources = {
+    segment_two_resources = {
         "exampleAction" = {
             path_part = "{id}"
             parent_resource = "exampleCollection" # Which segment 1 resource this belongs to  
@@ -104,6 +105,8 @@ module "terraform-aws-microservice" {
             api_key_required = true
             auth = "NONE"
             function = "${local.full_stack_name}ExampleAction"
+            segment = 2 # Which segment is the final resource of the url of the action  
+            full_path = "example/{id}" # the full path to the action, without a leading forward slash
         }
     }
 }
