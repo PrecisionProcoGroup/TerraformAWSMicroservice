@@ -2,13 +2,9 @@
 
 A module for terraform to attempt to make deploying a microservice to lambda easier.
 
-This mostly replicates the functionality of the serverless platform bar 1 main feature still in the works.
+This mostly replicates the functionality of the serverless platform except in a terraform module
 
-TODO:
-
-- Custom domain functionality
-
-The benefits of using terraform over serverless is its much, much faster and far more customizable to your specific needs.
+The benefits of using terraform over serverless is that its much, much faster and far more customizable to your specific needs.
 
 ## Usage
 
@@ -109,6 +105,10 @@ module "terraform-aws-microservice" {
             full_path = "example/{id}" # the full path to the action, without a leading forward slash
         }
     }
+  
+    domain_name = "myapp.stage.domain.tld"
+    domain_zone_id = "XXXXXXXXXXXX" # This id is found against the primary domain zone (e.g. domain.tld) once added to your account in aws
+    domain_certificate_arn = "arn:aws:acm:eu-west-2:${var.AWS_ACCOUNT_ID}:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # This is the certificate ARN which you will need to request for the domain you plan to use via aws UI first 
 }
 ```
 
