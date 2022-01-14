@@ -46,3 +46,13 @@ variable "files_to_exclude_from_zip" {
         ".directory",
     ]
 }
+
+variable "domain_name" {
+    default = ""
+}
+variable "domain_zone_id" {
+    default = ""
+}
+variable "domain_certificate_arn" {
+    default = ""
+}

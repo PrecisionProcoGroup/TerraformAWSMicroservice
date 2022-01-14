@@ -107,3 +107,38 @@ resource "aws_lambda_permission" "lambda_api_gateway_integration_permission" {
     principal = "apigateway.amazonaws.com"
     source_arn = "arn:aws:execute-api:eu-west-2:${var.aws_account_id}:${aws_api_gateway_rest_api.lambda_api_gateway[0].id}/*/${each.value.method}/${each.value.full_path}"
 }
+
+# Custom domain
+
+resource "aws_api_gateway_domain_name" "custom_domain" {
+    count = length(var.domain_name) > 0 ? 1 : 0
+
+    domain_name = var.domain_name
+    regional_certificate_arn = var.domain_certificate_arn
+
+    endpoint_configuration {
+        types = ["REGIONAL"]
+    }
+}
+
+resource "aws_api_gateway_base_path_mapping" "custom_domain_base_path" {
+    count = length(var.domain_name) > 0 ? 1 : 0
+
+    api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
+    domain_name = aws_api_gateway_domain_name.custom_domain[0].domain_name
+    stage_name = aws_api_gateway_stage.lambda_api_gateway_stage[0].stage_name
+}
+
+resource "aws_route53_record" "custom_domain_a_record" {
+    count = length(var.domain_name) > 0 ? 1 : 0
+
+    name = aws_api_gateway_domain_name.custom_domain[0].domain_name
+    type = "A"
+    zone_id = var.domain_zone_id
+
+    alias {
+        evaluate_target_health = true
+        name = aws_api_gateway_domain_name.custom_domain[0].regional_domain_name
+        zone_id = aws_api_gateway_domain_name.custom_domain[0].regional_zone_id
+    }
+}
