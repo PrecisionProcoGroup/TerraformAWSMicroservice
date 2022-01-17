@@ -96,6 +96,15 @@ module "terraform-aws-microservice" {
 
     # Actions attached to a resource at segment 2 of the url which link to a lambda function
     actions = {
+        # This root action is not needed but if it is defined it will automatically attach to the root
+        # it does not need a segment resource to be defined along with it
+        root = {
+          method = "GET"
+          api_key_required = true
+          auth = "NONE"
+          function = "${local.full_stack_name}ExampleAction" # you can map more than 1 action to the same function
+          full_path = "*" # this is the root so has no path
+        }
         exampleAction = {
             method = "GET"
             api_key_required = true

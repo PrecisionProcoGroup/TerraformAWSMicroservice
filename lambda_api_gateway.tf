@@ -79,7 +79,7 @@ resource "aws_api_gateway_method" "lambda_api_gateway_method" {
     for_each = tomap(var.actions)
 
     rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
-    resource_id = each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : ""
+    resource_id = each.key == "root" ? aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id : each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : ""
     http_method = each.value.method
     api_key_required = each.value.api_key_required
     authorization = each.value.auth
@@ -91,7 +91,7 @@ resource "aws_api_gateway_integration" "lambda_api_gateway_integration" {
     for_each = tomap(var.actions)
 
     rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
-    resource_id = each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : ""
+    resource_id = each.key == "root" ? aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id : each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : ""
     http_method = each.value.method
     integration_http_method = "POST"
     type = "AWS_PROXY"
@@ -101,7 +101,7 @@ resource "aws_api_gateway_integration" "lambda_api_gateway_integration" {
 resource "aws_lambda_permission" "lambda_api_gateway_integration_permission" {
     for_each = tomap(var.actions)
 
-    statement_id  = "AllowAPIGatewayInvoke"
+    statement_id  = "AllowInvoke${each.key}"
     action = "lambda:InvokeFunction"
     function_name = aws_lambda_function.lambda_function[each.value.function].function_name
     principal = "apigateway.amazonaws.com"
