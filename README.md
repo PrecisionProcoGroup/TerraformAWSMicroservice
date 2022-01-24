@@ -104,7 +104,7 @@ module "terraform-aws-microservice" {
           auth = "NONE"
           function = "${local.full_stack_name}ExampleAction" # you can map more than 1 action to the same function
           segment = 0
-          full_path = "*" # this is the root so has no path
+          full_path = "" # this is the root so has no path
         }
         exampleAction = {
             method = "GET"
