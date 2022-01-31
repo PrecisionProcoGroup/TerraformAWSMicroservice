@@ -118,7 +118,29 @@ module "terraform-aws-microservice" {
   
     domain_name = "myapp.stage.domain.tld"
     domain_zone_id = "XXXXXXXXXXXX" # This id is found against the primary domain zone (e.g. domain.tld) once added to your account in aws
-    domain_certificate_arn = "arn:aws:acm:eu-west-2:${var.AWS_ACCOUNT_ID}:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # This is the certificate ARN which you will need to request for the domain you plan to use via aws UI first 
+    domain_certificate_arn = "arn:aws:acm:eu-west-2:${var.AWS_ACCOUNT_ID}:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # This is the certificate ARN which you will need to request for the domain you plan to use via aws UI first
+  
+    # Optional custom access policy variable
+    access_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "execute-api:Invoke",
+      "Resource": "execute-api:/*/*/*",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "000.000.000.000"
+        }
+      }
+    }
+  ]
+}
+EOF
 }
 ```
 

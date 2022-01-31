@@ -47,6 +47,10 @@ variable "files_to_exclude_from_zip" {
     ]
 }
 
+variable "access_policy" {
+    default = ""
+}
+
 variable "domain_name" {
     default = ""
 }

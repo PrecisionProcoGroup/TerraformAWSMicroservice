@@ -108,6 +108,13 @@ resource "aws_lambda_permission" "lambda_api_gateway_integration_permission" {
     source_arn = "arn:aws:execute-api:eu-west-2:${var.aws_account_id}:${aws_api_gateway_rest_api.lambda_api_gateway[0].id}/*/${each.value.method}/${each.value.full_path}"
 }
 
+resource "aws_api_gateway_rest_api_policy" "api_policy" {
+    count = length(var.access_policy) > 0 ? 1 : 0
+
+    rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
+    policy = var.access_policy
+}
+
 # Custom domain
 
 resource "aws_api_gateway_domain_name" "custom_domain" {
