@@ -75,11 +75,27 @@ resource "aws_api_gateway_resource" "lambda_api_gateway_resource_segment_two" {
     path_part = each.value.path_part
 }
 
+resource "aws_api_gateway_resource" "lambda_api_gateway_resource_segment_three" {
+    for_each = tomap(var.segment_three_resources)
+
+    rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
+    parent_id = length(each.value.parent_resource) > 0 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.value.parent_resource].id : aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id
+    path_part = each.value.path_part
+}
+
+resource "aws_api_gateway_resource" "lambda_api_gateway_resource_segment_four" {
+    for_each = tomap(var.segment_four_resources)
+
+    rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
+    parent_id = length(each.value.parent_resource) > 0 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_three[each.value.parent_resource].id : aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id
+    path_part = each.value.path_part
+}
+
 resource "aws_api_gateway_method" "lambda_api_gateway_method" {
     for_each = tomap(var.actions)
 
     rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
-    resource_id = each.key == "root" ? aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id : each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : ""
+    resource_id = each.key == "root" ? aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id : each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : each.value.segment == 3 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_three[each.key].id : each.value.segment == 4 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_four[each.key].id : ""
     http_method = each.value.method
     api_key_required = each.value.api_key_required
     authorization = each.value.auth
@@ -91,7 +107,7 @@ resource "aws_api_gateway_integration" "lambda_api_gateway_integration" {
     for_each = tomap(var.actions)
 
     rest_api_id = aws_api_gateway_rest_api.lambda_api_gateway[0].id
-    resource_id = each.key == "root" ? aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id : each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : ""
+    resource_id = each.key == "root" ? aws_api_gateway_rest_api.lambda_api_gateway[0].root_resource_id : each.value.segment == 1 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_one[each.key].id : each.value.segment == 2 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_two[each.key].id : each.value.segment == 3 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_three[each.key].id : each.value.segment == 4 ? aws_api_gateway_resource.lambda_api_gateway_resource_segment_four[each.key].id : ""
     http_method = each.value.method
     integration_http_method = "POST"
     type = "AWS_PROXY"

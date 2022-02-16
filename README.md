@@ -93,6 +93,8 @@ module "terraform-aws-microservice" {
             parent_resource = "exampleCollection" # Which segment 1 resource this belongs to  
         }
     }
+  
+    # For longer urls use segment_three_resources and segment_four_resources
 
     # Actions attached to a resource at segment 2 of the url which link to a lambda function
     actions = {

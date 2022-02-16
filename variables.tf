@@ -1,6 +1,12 @@
 variable "actions" {
     default = {}
 }
+variable "segment_four_resources" {
+    default = {}
+}
+variable "segment_three_resources" {
+    default = {}
+}
 variable "segment_two_resources" {
     default = {}
 }
